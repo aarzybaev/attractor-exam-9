@@ -8,10 +8,7 @@ const Navbar: React.FC = () => {
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <NavLink className="nav-link" to="/categories">Categories</NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/add">Add</NavLink>
+              <NavLink className="btn btn-primary" to="/categories">Categories</NavLink>
             </li>
           </ul>
         </div>
