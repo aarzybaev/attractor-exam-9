@@ -1,8 +1,13 @@
 import CategoriesItem from '../components/CategoriesItem/CategoriesItem';
 import {useAppDispatch, useAppSelector} from '../app/hooks';
 import React, {useCallback, useEffect, useState} from 'react';
-import {selectCategories, selectCreateCategoryLoading, selectFetchAllCategoriesLoading} from '../store/categoriesSlice';
-import {createCategory, fetchAllCategories} from '../store/categoriesThunks';
+import {
+  selectCategories,
+  selectCreateCategoryLoading,
+  selectDeleteCategoryLoading,
+  selectFetchAllCategoriesLoading
+} from '../store/categoriesSlice';
+import {createCategory, fetchAllCategories, removeCategory} from '../store/categoriesThunks';
 import Spinner from '../components/Spinner/Spinner';
 import Modal from '../components/Modal/Modal';
 import ButtonSpinner from '../components/ButtonSpinner/ButtonSpinner';
@@ -18,6 +23,8 @@ const Categories = () => {
   const categories = useAppSelector(selectCategories);
   const isLoading = useAppSelector(selectFetchAllCategoriesLoading);
   const isCreating = useAppSelector(selectCreateCategoryLoading);
+  const isDeleting = useAppSelector(selectDeleteCategoryLoading);
+
   const fetchCategories = useCallback(async ()=> {
     await dispatch(fetchAllCategories());
   }, [dispatch]);
@@ -26,8 +33,9 @@ const Categories = () => {
     void fetchCategories();
   }, [fetchCategories]);
 
-  const onRemove = (id: string) => {
-    console.log(id);
+  const onRemove = async (id: string) => {
+    await dispatch(removeCategory(id));
+    await fetchCategories();
   };
 
   const onEdit = (id: string) => {
@@ -118,10 +126,10 @@ const Categories = () => {
       {categories.map(item => (
         <CategoriesItem
           key={item.id}
-          type={item.type}
-          name={item.name}
+          item={item}
           onRemove={() => onRemove(item.id)}
           onEdit={() => onEdit(item.id)}
+          isDeleting={isDeleting}
         />
       ))}
       {modal}
