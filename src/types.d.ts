@@ -10,3 +10,8 @@ export interface Category extends  ApiCategory {
 export interface ApiCategories {
   [id: string]: ApiCategory;
 }
+
+export interface UpdateCategoryParams {
+  catID: string;
+  apiCategory: ApiCategory;
+}

@@ -2,25 +2,32 @@ import CategoriesItem from '../components/CategoriesItem/CategoriesItem';
 import {useAppDispatch, useAppSelector} from '../app/hooks';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  selectCategories,
+  selectCategories, selectCategory,
   selectCreateCategoryLoading,
   selectDeleteCategoryLoading,
   selectFetchAllCategoriesLoading
 } from '../store/categoriesSlice';
-import {createCategory, fetchAllCategories, removeCategory} from '../store/categoriesThunks';
+import {
+  createCategory,
+  fetchAllCategories,
+  fetchOneCategory,
+  removeCategory,
+  updateCategory
+} from '../store/categoriesThunks';
 import Spinner from '../components/Spinner/Spinner';
 import Modal from '../components/Modal/Modal';
 import ButtonSpinner from '../components/ButtonSpinner/ButtonSpinner';
 
 const Categories = () => {
   const [showModal, setShowModal] = useState(false);
-  const [categoryForm, setCategoryForm] = useState({
-    name: '',
-    type: 'income'
-  });
+    const [categoryForm, setCategoryForm] = useState({
+      name: '',
+      type: 'income'
+    });
 
   const dispatch = useAppDispatch();
   const categories = useAppSelector(selectCategories);
+  const category = useAppSelector(selectCategory);
   const isLoading = useAppSelector(selectFetchAllCategoriesLoading);
   const isCreating = useAppSelector(selectCreateCategoryLoading);
   const isDeleting = useAppSelector(selectDeleteCategoryLoading);
@@ -38,8 +45,13 @@ const Categories = () => {
     await fetchCategories();
   };
 
-  const onEdit = (id: string) => {
+  const onEdit = async (id: string) => {
     console.log(id);
+    await dispatch(fetchOneCategory(id));
+    if (category) {
+      setShowModal(true);
+      setCategoryForm({name: category.name, type: category.type});
+    }
   };
 
   const addCategory = async () => {
@@ -47,6 +59,10 @@ const Categories = () => {
       await dispatch(createCategory(categoryForm));
       await fetchCategories();
       cancel();
+      setCategoryForm({
+        name: '',
+        type: 'income'
+      });
     } else {
       window.alert('White space is not restricted');
     }
@@ -61,10 +77,20 @@ const Categories = () => {
     }));
   };
 
+  const editeCategory = async (id: string) => {
+    await dispatch(updateCategory({catID: id, apiCategory: categoryForm}));
+    await fetchCategories();
+    cancel();
+    setCategoryForm({
+      name: '',
+      type: 'income'
+    });
+  };
+
   const modal = (
     <Modal
       show={showModal}
-      title="Add category"
+      title={category ? 'Edit' : 'Add'}
       onClose={cancel}
     >
       <div className="modal-body">
@@ -101,15 +127,25 @@ const Categories = () => {
         </button>
         <button
           className="btn btn-success"
-          onClick={addCategory}
+          onClick={() => {
+            if (category) {
+              void editeCategory(category.id);
+          } else {
+              void addCategory();
+            }
+          }}
           disabled={isCreating}
         >
-          Add
+          {category ? 'Edit':'Add'}
           {isCreating && <ButtonSpinner />}
         </button>
       </div>
     </Modal>
   );
+
+  const addHandler = () => {
+    setShowModal(true);
+  };
 
   return isLoading ? <Spinner/> : (
     <div>
@@ -118,7 +154,7 @@ const Categories = () => {
           <button
             type="button"
             className="btn btn-primary btn-sm"
-            onClick={() => setShowModal(true)}
+            onClick={addHandler}
           >
             Add
           </button>

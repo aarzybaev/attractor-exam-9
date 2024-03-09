@@ -1,6 +1,6 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import axiosAPI from '../axiosAPI';
-import {ApiCategories, ApiCategory, Category} from '../types';
+import {ApiCategories, ApiCategory, Category, UpdateCategoryParams} from '../types';
 
 export const fetchAllCategories = createAsyncThunk<Category[], void>(
   'categories/fetchAll',
@@ -32,4 +32,24 @@ export const removeCategory = createAsyncThunk<void, string>(
   async (id) => {
     await axiosAPI.delete('/categories/' + id + '.json');
   }
+);
+
+export const fetchOneCategory = createAsyncThunk<Category, string>(
+  'categories/fetchOne',
+  async (catID) => {
+
+      const {data: category} = await axiosAPI.get<ApiCategory | null>(`/categories/${catID}.json`);
+    if (category === null) {
+      throw new Error('Not found');
+    }
+    return ({...category, id: catID});
+
+  },
+);
+
+export const updateCategory = createAsyncThunk<void, UpdateCategoryParams>(
+  'categories/update',
+  async ({catID, apiCategory}) => {
+    await axiosAPI.put(`/categories/${catID}.json`, apiCategory);
+  },
 );
