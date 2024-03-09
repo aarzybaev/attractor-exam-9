@@ -3,10 +3,14 @@ import React from 'react';
 interface Props {
   type: string;
   name: string;
+  onRemove: React.MouseEventHandler;
+  onEdit: React.MouseEventHandler;
 }
 const CategoriesItem: React.FC<Props> = ({
   type,
-  name
+  name,
+  onRemove,
+  onEdit
 }) => {
 
   return (
@@ -14,8 +18,18 @@ const CategoriesItem: React.FC<Props> = ({
       <span>{name}</span>
       <div>
         <span className="me-5 text-capitalize" style={type === "income"? {color: "green"} : {color: "red"} }>{type}</span>
-        <button className="btn btn-warning btn-sm">Edit</button>
-        <button className="btn btn-danger btn-sm ms-2">Delete</button>
+        <button
+          className="btn btn-warning btn-sm"
+          onClick={onEdit}
+        >
+          Edit
+        </button>
+        <button
+          className="btn btn-danger btn-sm ms-2"
+          onClick={onRemove}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );
