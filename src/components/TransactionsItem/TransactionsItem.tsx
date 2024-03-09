@@ -5,10 +5,12 @@ import dayjs from 'dayjs';
 interface Props {
   item: Transaction;
   categories: Category[];
+  onDelete: React.MouseEventHandler;
 }
 const TransactionsItem: React.FC<Props> = ({
   item,
-  categories
+  categories,
+  onDelete
 }) => {
 
   const getCategoryName = (id: string) => {
@@ -34,7 +36,7 @@ const TransactionsItem: React.FC<Props> = ({
         {getCategoryType(item.category) === 'expense' ? "-" + item.amount : "+" + item.amount} KGS</span>
       <div>
         <button type="button" className="btn btn-warning btn-sm">Edit</button>
-        <button type="button" className="btn btn-danger btn-sm ms-2">Delete</button>
+        <button type="button" className="btn btn-danger btn-sm ms-2" onClick={onDelete}>Delete</button>
       </div>
     </div>
   );

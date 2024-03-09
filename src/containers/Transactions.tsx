@@ -1,7 +1,7 @@
 import {useAppDispatch, useAppSelector} from '../app/hooks';
 import {selectTransactions} from '../store/transactionsSlice';
 import React, {useCallback, useEffect, useState} from 'react';
-import {createTransaction, fetchAllTransactions} from '../store/transactionsThunks';
+import {createTransaction, fetchAllTransactions, removeTransaction} from '../store/transactionsThunks';
 import {selectCategories} from '../store/categoriesSlice';
 import {fetchAllCategories} from '../store/categoriesThunks';
 import TransactionsItem from '../components/TransactionsItem/TransactionsItem';
@@ -85,6 +85,11 @@ const Transactions = () => {
 
   };
 
+  const deleteHandle = async (id: string) => {
+    await dispatch(removeTransaction(id));
+    await fetchTransactions();
+  };
+
   const modal = (
     <Modal
       show={showModal}
@@ -165,6 +170,7 @@ const Transactions = () => {
           key={item.id}
           item={item}
           categories={categories}
+          onDelete={() => deleteHandle(item.id)}
         />
       ))}
       {modal}
