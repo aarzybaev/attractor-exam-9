@@ -5,7 +5,8 @@ import {
   selectCategories, selectCategory,
   selectCreateCategoryLoading,
   selectDeleteCategoryLoading,
-  selectFetchAllCategoriesLoading
+  selectFetchAllCategoriesLoading,
+  selectUpdateCategoryLoading
 } from '../store/categoriesSlice';
 import {
   createCategory,
@@ -31,9 +32,14 @@ const Categories = () => {
   const isLoading = useAppSelector(selectFetchAllCategoriesLoading);
   const isCreating = useAppSelector(selectCreateCategoryLoading);
   const isDeleting = useAppSelector(selectDeleteCategoryLoading);
+  const isUpdateLoading = useAppSelector(selectUpdateCategoryLoading);
 
   const fetchCategories = useCallback(async ()=> {
     await dispatch(fetchAllCategories());
+  }, [dispatch]);
+
+  const fetchCategory = useCallback(async (id: string) => {
+    await dispatch(fetchOneCategory(id));
   }, [dispatch]);
 
   useEffect(() => {
@@ -45,13 +51,16 @@ const Categories = () => {
     await fetchCategories();
   };
 
-  const onEdit = async (id: string) => {
-    console.log(id);
-    await dispatch(fetchOneCategory(id));
+  const onEdit =  async (id: string) => {
+    await fetchCategory(id);
     if (category) {
+      setCategoryForm({
+        name: category.name,
+        type: category.type
+      });
       setShowModal(true);
-      setCategoryForm({name: category.name, type: category.type});
     }
+
   };
 
   const addCategory = async () => {
@@ -90,7 +99,7 @@ const Categories = () => {
   const modal = (
     <Modal
       show={showModal}
-      title={category ? 'Edit' : 'Add'}
+      title={category ? 'Edit':'Add'}
       onClose={cancel}
     >
       <div className="modal-body">
@@ -127,25 +136,17 @@ const Categories = () => {
         </button>
         <button
           className="btn btn-success"
-          onClick={() => {
-            if (category) {
-              void editeCategory(category.id);
-          } else {
-              void addCategory();
-            }
-          }}
-          disabled={isCreating}
+          onClick={() => category ? editeCategory(category.id) : addCategory() }
+          disabled={isCreating || isUpdateLoading}
         >
-          {category ? 'Edit':'Add'}
-          {isCreating && <ButtonSpinner />}
+          {category ? 'Edit': 'Add' }
+          {isCreating && <ButtonSpinner /> || isUpdateLoading && <ButtonSpinner />}
         </button>
       </div>
     </Modal>
   );
 
-  const addHandler = () => {
-    setShowModal(true);
-  };
+
 
   return isLoading ? <Spinner/> : (
     <div>
@@ -154,7 +155,7 @@ const Categories = () => {
           <button
             type="button"
             className="btn btn-primary btn-sm"
-            onClick={addHandler}
+            onClick={() => setShowModal(true)}
           >
             Add
           </button>
@@ -168,7 +169,9 @@ const Categories = () => {
           isDeleting={isDeleting}
         />
       ))}
+
       {modal}
+
     </div>
 
   );

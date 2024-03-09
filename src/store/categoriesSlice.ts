@@ -59,6 +59,7 @@ export const categoriesSlice = createSlice({
     }).addCase(fetchOneCategory.fulfilled, (state, {payload: category}) => {
       state.categoryItem = category;
       state.fetchOneCategoryLoading = false;
+
     }).addCase(fetchOneCategory.rejected, (state) => {
       state.fetchOneCategoryLoading = false;
     });
@@ -79,7 +80,6 @@ export const selectCategories = (state: RootState) => state.categories.categoryI
 export const selectCategory = (state: RootState) => state.categories.categoryItem;
 
 export const selectFetchAllCategoriesLoading = (state: RootState) => state.categories.fetchAllCategoriesLoading;
-export const selectFetchOneCategoryLoading = (state: RootState) => state.categories.fetchOneCategoryLoading;
 
 export const selectCreateCategoryLoading = (state: RootState) => state.categories.createCategoryLoading;
 export const selectDeleteCategoryLoading = (state: RootState) => state.categories.deleteCategoryLoading;
