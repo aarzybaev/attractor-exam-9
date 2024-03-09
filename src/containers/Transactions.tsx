@@ -86,8 +86,11 @@ const Transactions = () => {
   };
 
   const deleteHandle = async (id: string) => {
-    await dispatch(removeTransaction(id));
-    await fetchTransactions();
+    if (window.confirm('Are you sure?')) {
+      await dispatch(removeTransaction(id));
+      await fetchTransactions();
+    }
+
   };
 
   const modal = (
